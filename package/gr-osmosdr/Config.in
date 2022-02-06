@@ -36,4 +36,10 @@ config BR2_PACKAGE_GR_OSMOSDR_RFSPACE
 	help
 	  Enable RFSPACE Receivers support
 
+config BR2_PACKAGE_GR_OSMOSDR_HACKRF
+	bool "Osmocom HACKRF support"
+	depends on BR2_PACKAGE_HACKRF
+	help
+	  Enable Osmocom HACKRF support
+
 endif
