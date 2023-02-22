@@ -1,0 +1,55 @@
+From c58760b002c1a954a9ab628352900fcd8e6e199c Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Martin=20B=C3=B6h?= <martin@familie-boeh.de>
+Date: Wed, 22 Feb 2023 03:05:08 +0100
+Subject: [PATCH] grPyBind: fix invalid suffix
+
+---
+ cmake/Modules/GrPybind.cmake | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
+
+diff --git a/cmake/Modules/GrPybind.cmake b/cmake/Modules/GrPybind.cmake
+index 5a6fb7633..c2df17c2d 100644
+--- a/cmake/Modules/GrPybind.cmake
++++ b/cmake/Modules/GrPybind.cmake
+@@ -8,6 +8,12 @@ macro(GR_PYBIND_MAKE name updir filter files)
+                    ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
+ 
+     pybind11_add_module(${name}_python ${files})
++    
++    # Use normal .so suffix when crosscompiling
++    # See https://github.com/gnuradio/gnuradio/issues/5455
++    if (CMAKE_CROSSCOMPILING)
++        set_target_properties(${name}_python PROPERTIES SUFFIX ".so")
++    endif()
+ 
+     set(MODULE_NAME ${name})
+     if(${name} STREQUAL gr)
+@@ -135,6 +141,12 @@ macro(GR_PYBIND_MAKE_CHECK_HASH name updir filter files)
+ 
+     pybind11_add_module(${name}_python ${files})
+ 
++    # Use normal .so suffix when crosscompiling
++    # See https://github.com/gnuradio/gnuradio/issues/5455
++    if (CMAKE_CROSSCOMPILING)
++        set_target_properties(${name}_python PROPERTIES SUFFIX ".so")
++    endif()
++
+     set(MODULE_NAME ${name})
+     if(${name} STREQUAL gr)
+         set(MODULE_NAME "runtime")
+@@ -286,6 +298,12 @@ macro(GR_PYBIND_MAKE_OOT name updir filter files)
+ 
+     pybind11_add_module(${name}_python ${files})
+ 
++    # Use normal .so suffix when crosscompiling
++    # See https://github.com/gnuradio/gnuradio/issues/5455
++    if (CMAKE_CROSSCOMPILING)
++        set_target_properties(${name}_python PROPERTIES SUFFIX ".so")
++    endif()
++
+     set(MODULE_NAME ${name})
+     if(${name} STREQUAL gr)
+         set(MODULE_NAME "runtime")
+-- 
+2.39.1
+
