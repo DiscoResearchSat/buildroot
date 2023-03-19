@@ -1,0 +1,34 @@
+From 97aa47f2f2f0c321a0224b5dcd4560685a4baa84 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Martin=20B=C3=B6h?= <contact@martb.dev>
+Date: Sun, 19 Mar 2023 21:57:29 +0100
+Subject: [PATCH] hack: use O2 optimization by default
+
+---
+ Python/initconfig.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/Python/initconfig.c b/Python/initconfig.c
+index d81cbaff7e..0387081f5f 100644
+--- a/Python/initconfig.c
++++ b/Python/initconfig.c
+@@ -796,7 +796,7 @@ config_init_defaults(PyConfig *config)
+     config->bytes_warning = 0;
+     config->inspect = 0;
+     config->interactive = 0;
+-    config->optimization_level = 0;
++    config->optimization_level = 2;
+     config->parser_debug= 0;
+     config->write_bytecode = 1;
+     config->verbose = 0;
+@@ -2412,7 +2412,7 @@ config_parse_cmdline(PyConfig *config, PyWideStringList *warnoptions,
+         /* case 'J': reserved for Jython */
+ 
+         case 'O':
+-            config->optimization_level++;
++            //config->optimization_level++;
+             break;
+ 
+         case 'P':
+-- 
+2.39.2
+

@@ -259,11 +259,13 @@ endif
 
 define PYTHON3_CREATE_PYC_FILES
 	$(PYTHON3_FIX_TIME)
-	PYTHONPATH="$(PYTHON3_PATH)" \
+	PYTHONPATH="$(PYTHON3_PATH)" PYTHONHASHSEED=0 \
 	$(HOST_DIR)/bin/python$(PYTHON3_VERSION_MAJOR) \
 		$(PYTHON3_DIR)/Lib/compileall.py \
 		$(if $(VERBOSE),,-q) \
 		$(if $(BR2_PACKAGE_PYTHON3_PYC_ONLY),-b) \
+		-o 2 \
+		--invalidation-mode unchecked-hash\
 		-s $(TARGET_DIR) \
 		-p / \
 		$(TARGET_DIR)/usr/lib/python$(PYTHON3_VERSION_MAJOR)
@@ -292,12 +294,3 @@ define PYTHON3_REMOVE_PYC_FILES
 endef
 PYTHON3_TARGET_FINALIZE_HOOKS += PYTHON3_REMOVE_PYC_FILES
 endif
-
-# In all cases, we don't want to keep the optimized .opt-1.pyc and
-# .opt-2.pyc files, since they can't work without their non-optimized
-# variant.
-define PYTHON3_REMOVE_OPTIMIZED_PYC_FILES
-	find $(TARGET_DIR)/usr/lib/python$(PYTHON3_VERSION_MAJOR) -name '*.opt-1.pyc' -print0 -o -name '*.opt-2.pyc' -print0 | \
-		xargs -0 --no-run-if-empty rm -f
-endef
-PYTHON3_TARGET_FINALIZE_HOOKS += PYTHON3_REMOVE_OPTIMIZED_PYC_FILES
