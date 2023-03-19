@@ -21,7 +21,13 @@ HOST_PYTHON_NUMPY_DEPENDENCIES = host-python-cython
 
 ifeq ($(BR2_PACKAGE_LAPACK),y)
 PYTHON_NUMPY_DEPENDENCIES += lapack
-else
+endif
+
+ifeq ($(BR2_PACKAGE_OPENBLAS),y)
+PYTHON_NUMPY_DEPENDENCIES += openblas
+endif
+
+ifeq ($(BR2_PACKAGE_LAPACK)$(BR2_PACKAGE_OPENBLAS),)
 PYTHON_NUMPY_ENV += BLAS=None LAPACK=None
 endif
 
@@ -45,6 +51,7 @@ endef
 # it uses host libraries (like libnpymath.a).
 # So, the numpy distutils extension packages would explicitly link this
 # config path for their package environment.
+# This also deletes the numpy site.cfg with host paths inside
 define PYTHON_NUMPY_FIXUP_NPY_PKG_CONFIG_FILES
 	$(SED) '/^pkgdir=/d;/^prefix=/i pkgdir=$(PYTHON3_PATH)/site-packages/numpy/core' \
 		$(PYTHON3_PATH)/site-packages/numpy/core/lib/npy-pkg-config/npymath.ini
@@ -54,6 +61,15 @@ PYTHON_NUMPY_POST_INSTALL_STAGING_HOOKS += PYTHON_NUMPY_FIXUP_NPY_PKG_CONFIG_FIL
 # Some package may include few headers from NumPy, so let's install it
 # in the staging area.
 PYTHON_NUMPY_INSTALL_STAGING = YES
+
+# Clean the invalid paths up before they reach the target
+PYTHON_NUMPY_SITE_CFG_PATH = $(TARGET_DIR)/usr/lib/python$(PYTHON3_VERSION_MAJOR)/site-packages/numpy/distutils
+define PYTHON_NUMPY_POST_INSTALL_CLEANUP
+	echo "[DEFAULT]" > $(PYTHON_NUMPY_SITE_CFG_PATH)/site.cfg
+	echo "library_dirs = /usr/lib" >> $(PYTHON_NUMPY_SITE_CFG_PATH)/site.cfg
+	echo "runtime_library_dirs = /usr/lib" >> $(PYTHON_NUMPY_SITE_CFG_PATH)/site.cfg
+endef
+PYTHON_NUMPY_POST_INSTALL_TARGET_HOOKS += PYTHON_NUMPY_POST_INSTALL_CLEANUP
 
 $(eval $(python-package))
 $(eval $(host-python-package))

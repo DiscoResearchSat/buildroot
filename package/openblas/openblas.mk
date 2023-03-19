@@ -32,6 +32,11 @@ else
 OPENBLAS_MAKE_OPTS += USE_THREAD=0
 endif
 
+# Disable lapack building if its already provided
+ifeq ($(BR2_PACKAGE_LAPACK),y)
+OPENBLAS_MAKE_OPTS += NO_LAPACK=1
+endif
+
 ifeq ($(BR2_PACKAGE_OPENBLAS_USE_LOCKING),y)
 OPENBLAS_MAKE_OPTS += USE_LOCKING=1
 else
@@ -39,8 +44,8 @@ else
 # in case of USE_THREAD=1.
 endif
 
-# We don't know if OpenMP is available or not, so disable
-OPENBLAS_MAKE_OPTS += USE_OPENMP=0
+# Detect OpenMP support
+OPENBLAS_MAKE_OPTS += USE_OPENMP=$(if $(BR2_TOOLCHAIN_HAS_OPENMP),1,0)
 
 # Static-only/Shared-only toggle
 # Note: static library is always generated so that applications can link

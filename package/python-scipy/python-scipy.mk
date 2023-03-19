@@ -23,11 +23,18 @@ PYTHON_SCIPY_LICENSE_FILES = \
 	scipy/spatial/qhull_src/COPYING.txt
 PYTHON_SCIPY_CPE_ID_VENDOR = scipy
 PYTHON_SCIPY_CPE_ID_PRODUCT = scipy
+
+# If the user selected openblas, build it, else use lapack
+ifeq ($(BR2_PACKAGE_PYTHON_SCIPY_OPENBLAS),y)
+PYTHON_SCIPY_DEPENDENCIES += openblas
+else
+PYTHON_SCIPY_DEPENDENCIES += lapack
+endif
+
 PYTHON_SCIPY_DEPENDENCIES += \
 	host-python-numpy \
 	host-python-pythran \
 	zlib \
-	lapack \
 	python-numpy \
 	python-pybind
 PYTHON_SCIPY_INSTALL_STAGING = YES
